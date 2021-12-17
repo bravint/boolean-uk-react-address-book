@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 
 function CreateContactForm(props) {
-    // [TODO] Write form handlers here and POST requests here...
-  const { setHideForm, setContacts } = props
+    const { setRefresh, refresh } = props;
 
     const initialContacts = {
         firstName: "",
@@ -31,10 +30,9 @@ function CreateContactForm(props) {
 
     useEffect(() => {
         if (contact.addressId === null) return;
-        postContact();      
+        postContact();
+        setRefresh(!refresh);
     }, [contact]);
-
-    console.log("states", { contact, address });
 
     const handleContactChange = (event) =>
         setContact({ ...contact, [event.target.name]: event.target.value });
@@ -47,7 +45,6 @@ function CreateContactForm(props) {
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        console.log("before POST", { contact, address });
         setSubmit(true);
     };
 
@@ -63,7 +60,7 @@ function CreateContactForm(props) {
             const data = await response.json();
             console.log("server copy of data posted including its ID", data);
             setContact({ ...contact, addressId: data.id });
-            setAddress(initialAddresses)
+            setAddress(initialAddresses);
         } catch (error) {
             console.log("address post error", error);
         }
@@ -71,7 +68,7 @@ function CreateContactForm(props) {
 
     const postContact = async () => {
         try {
-            const response = await fetch("http://localhost:3000/contacts", {
+            const response = await fetch(`http://localhost:3000/contacts`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -79,11 +76,10 @@ function CreateContactForm(props) {
                 body: JSON.stringify(contact),
             });
             const data = await response.json();
-            console.log("server copy of data posted including its ID", data);
-            setContacts(contact)
-            setContact(initialContacts)
+            console.log(`server copy of data posted`, data);
+            setContact(initialContacts);
         } catch (error) {
-            console.log("contact post error", error);
+            console.log(`contact post error`, error);
         }
     };
 
