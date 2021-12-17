@@ -1,4 +1,4 @@
-function ContactsList(props) {
+const ContactsList = (props) => {
   const { contacts, hideForm, setHideForm } = props;
 
   return (

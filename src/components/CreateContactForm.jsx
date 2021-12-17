@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-function CreateContactForm(props) {
+const CreateContactForm = (props) => {
     const { setRefresh, refresh } = props;
 
     const initialContacts = {
@@ -31,22 +31,25 @@ function CreateContactForm(props) {
     useEffect(() => {
         if (contact.addressId === null) return;
         postContact();
+        resetForm();
         setRefresh(!refresh);
     }, [contact]);
 
-    const handleContactChange = (event) =>
-        setContact({ ...contact, [event.target.name]: event.target.value });
+    const handleContactChange = (event) => setContact({ ...contact, [event.target.name]: event.target.value });
 
-    const handleAddressChange = (event) =>
-        setAddress({ ...address, [event.target.name]: event.target.value });
+    const handleAddressChange = (event) => setAddress({ ...address, [event.target.name]: event.target.value });
 
-    const handleCheckboxChange = (event) =>
-        setContact({ ...contact, [event.target.name]: !contact.blockContact });
+    const handleCheckboxChange = (event) => setContact({ ...contact, [event.target.name]: !contact.blockContact });
 
     const handleSubmit = (event) => {
         event.preventDefault();
         setSubmit(true);
     };
+
+    const resetForm = () => {
+        setAddress(initialAddresses);
+        setContact(initialContacts);
+    }
 
     const postAddress = async () => {
         try {
@@ -58,9 +61,7 @@ function CreateContactForm(props) {
                 body: JSON.stringify(address),
             });
             const data = await response.json();
-            console.log("server copy of data posted including its ID", data);
             setContact({ ...contact, addressId: data.id });
-            setAddress(initialAddresses);
         } catch (error) {
             console.log("address post error", error);
         }
@@ -68,16 +69,13 @@ function CreateContactForm(props) {
 
     const postContact = async () => {
         try {
-            const response = await fetch(`http://localhost:3000/contacts`, {
+            await fetch(`http://localhost:3000/contacts`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify(contact),
             });
-            const data = await response.json();
-            console.log(`server copy of data posted`, data);
-            setContact(initialContacts);
         } catch (error) {
             console.log(`contact post error`, error);
         }
@@ -146,6 +144,6 @@ function CreateContactForm(props) {
             </div>
         </form>
     );
-}
+};
 
 export default CreateContactForm;
