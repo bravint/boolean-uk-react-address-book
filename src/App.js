@@ -1,20 +1,25 @@
 import { useState, useEffect } from "react";
+
 import ContactsList from "./components/ContactsList";
 import CreateContactForm from "./components/CreateContactForm";
+
 import "./styles/styles.css";
 
 export default function App() {
     const [contacts, setContacts] = useState([]);
+
     const [hideForm, setHideForm] = useState(true);
-    const [refresh, setRefresh] = useState(false);
+
+    const [fetchContacts, setFetchContacts] = useState(false);
+
     console.log("contacts", contacts);
 
     useEffect(() => {
-        fetchContacts();
+        fetchAPIContacts();
         setHideForm(true);
-    }, [refresh]);
+    }, [fetchContacts]);
 
-    const fetchContacts = async () => {
+    const fetchAPIContacts = async () => {
         try {
             const response = await fetch(`http://localhost:3000/contacts`);
             const data = await response.json();
@@ -34,8 +39,8 @@ export default function App() {
             <main>
                 {!hideForm && (
                     <CreateContactForm
-                        setRefresh={setRefresh}
-                        refresh={refresh}
+                        setFetchContacts={setFetchContacts}
+                        fetchContacts={fetchContacts}
                     />
                 )}
             </main>

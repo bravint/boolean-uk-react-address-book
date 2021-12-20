@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 
 const CreateContactForm = (props) => {
-    const { setRefresh, refresh } = props;
+    const { fetchContacts, setFetchContacts } = props;
 
     const initialContacts = {
         firstName: "",
@@ -16,30 +16,36 @@ const CreateContactForm = (props) => {
         postCode: "",
     };
 
-    const [contact, setContact] = useState(initialContacts);
+    const [newContact, setNewContact] = useState(initialContacts);
 
-    const [address, setAddress] = useState(initialAddresses);
+    const [newAddress, setNewAddress] = useState(initialAddresses);
 
     const [submit, setSubmit] = useState(false);
 
     useEffect(() => {
-        if (submit === false) return;
+        if (!submit) return;
         postAddress();
-        setSubmit(false);
+        setSubmit(false)
     }, [submit]);
 
     useEffect(() => {
-        if (contact.addressId === null) return;
+        if (!newContact.addressId) return;
         postContact();
         resetForm();
-        setRefresh(!refresh);
-    }, [contact]);
+        setFetchContacts(!fetchContacts);
+    }, [newContact]);
 
-    const handleContactChange = (event) => setContact({ ...contact, [event.target.name]: event.target.value });
+    console.log("states :", {
+        newContact, 
+        newAddress, 
+        submit
+    })
 
-    const handleAddressChange = (event) => setAddress({ ...address, [event.target.name]: event.target.value });
+    const handleContactChange = (event) => setNewContact({ ...newContact, [event.target.name]: event.target.value });
 
-    const handleCheckboxChange = (event) => setContact({ ...contact, [event.target.name]: !contact.blockContact });
+    const handleAddressChange = (event) => setNewAddress({ ...newAddress, [event.target.name]: event.target.value });
+
+    const handleCheckboxChange = (event) => setNewContact({ ...newContact, [event.target.name]: event.target.checked });
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -47,21 +53,27 @@ const CreateContactForm = (props) => {
     };
 
     const resetForm = () => {
-        setAddress(initialAddresses);
-        setContact(initialContacts);
+        setNewAddress(initialAddresses);
+        setNewContact(initialContacts);
+    }
+
+    const apiURL = (endpoint) => `http://localhost:3000/${endpoint}`
+
+    const postConfig = (data) => {
+        return {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+        }
     }
 
     const postAddress = async () => {
         try {
-            const response = await fetch("http://localhost:3000/addresses", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(address),
-            });
+            const response = await fetch(apiURL(`addresses`), postConfig(newAddress));
             const data = await response.json();
-            setContact({ ...contact, addressId: data.id });
+            setNewContact({ ...newContact, addressId: data.id });
         } catch (error) {
             console.log("address post error", error);
         }
@@ -69,13 +81,7 @@ const CreateContactForm = (props) => {
 
     const postContact = async () => {
         try {
-            await fetch(`http://localhost:3000/contacts`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(contact),
-            });
+            await fetch(apiURL(`contacts`), postConfig(newContact));
         } catch (error) {
             console.log(`contact post error`, error);
         }
@@ -93,7 +99,7 @@ const CreateContactForm = (props) => {
                 name="firstName"
                 type="text"
                 onChange={handleContactChange}
-                value={contact.firstName}
+                value={newContact.firstName}
             />
             <label htmlFor="last-name-input">Last Name:</label>
             <input
@@ -101,7 +107,7 @@ const CreateContactForm = (props) => {
                 name="lastName"
                 type="text"
                 onChange={handleContactChange}
-                value={contact.lastName}
+                value={newContact.lastName}
             />
             <label htmlFor="street-input">Street:</label>
             <input
@@ -109,7 +115,7 @@ const CreateContactForm = (props) => {
                 name="street"
                 type="text"
                 onChange={handleAddressChange}
-                value={address.street}
+                value={newAddress.street}
             />
             <label htmlFor="city-input">City:</label>
             <input
@@ -117,7 +123,7 @@ const CreateContactForm = (props) => {
                 name="city"
                 type="text"
                 onChange={handleAddressChange}
-                value={address.city}
+                value={newAddress.city}
             />
             <label htmlFor="post-code-input">Post Code:</label>
             <input
@@ -125,7 +131,7 @@ const CreateContactForm = (props) => {
                 name="postCode"
                 type="text"
                 onChange={handleAddressChange}
-                value={address.postCode}
+                value={newAddress.postCode}
             />
             <div className="checkbox-section">
                 <input
@@ -133,13 +139,19 @@ const CreateContactForm = (props) => {
                     name="blockContact"
                     type="checkbox"
                     onChange={handleCheckboxChange}
-                    value={contact.blockContact}
+                    checked={newContact.blockContact}
                 />
                 <label htmlFor="block-checkbox">Block</label>
             </div>
             <div className="actions-section">
                 <button className="button blue" type="submit">
                     Create
+                </button>
+                <button className="button blue">
+                    Save
+                </button>
+                <button className="button blue">
+                    Delete
                 </button>
             </div>
         </form>

@@ -140,9 +140,9 @@ h2 {
 }
 
 .contact-form .actions-section {
-  display: grid;
-  grid-auto-flow: column;
-  justify-content: right;
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: space-between;
   gap: 0.5rem;
 }
 
