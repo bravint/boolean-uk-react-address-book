@@ -12,7 +12,17 @@ export default function App() {
 
     const [fetchContacts, setFetchContacts] = useState(false);
 
-    console.log("contacts", contacts);
+    const [editContact, setEditContact] = useState(false);
+
+    const [contactToEdit, setcontactToEdit] = useState(null)
+
+    console.log("states", {
+        contacts,
+        hideForm,
+        fetchContacts,
+        editContact,
+        contactToEdit
+    });
 
     useEffect(() => {
         fetchAPIContacts();
@@ -35,12 +45,19 @@ export default function App() {
                 contacts={contacts}
                 hideForm={hideForm}
                 setHideForm={setHideForm}
+                setEditContact={setEditContact}
+                setcontactToEdit={setcontactToEdit}
+
             />
             <main>
                 {!hideForm && (
                     <CreateContactForm
                         setFetchContacts={setFetchContacts}
                         fetchContacts={fetchContacts}
+                        editContact={editContact}
+                        setEditContact={setEditContact}
+                        contactToEdit={contactToEdit}
+                        setcontactToEdit={setcontactToEdit}
                     />
                 )}
             </main>

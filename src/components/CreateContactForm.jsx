@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 
 const CreateContactForm = (props) => {
-    const { fetchContacts, setFetchContacts } = props;
+    const { fetchContacts, setFetchContacts, editContact, setEditContact, contactToEdit, setcontactToEdit } = props;
 
     const initialContacts = {
         firstName: "",
@@ -25,21 +25,41 @@ const CreateContactForm = (props) => {
     useEffect(() => {
         if (!submit) return;
         postAddress();
-        setSubmit(false)
     }, [submit]);
 
     useEffect(() => {
-        if (!newContact.addressId) return;
+        if (!newContact.addressId || !submit) return;
         postContact();
         resetForm();
         setFetchContacts(!fetchContacts);
+        setSubmit(false)
     }, [newContact]);
 
-    console.log("states :", {
+    console.log("states createForm:", {
         newContact, 
         newAddress, 
-        submit
+        submit,
+        editContact,
+        contactToEdit
     })
+
+    useEffect(() => {
+        if (!editContact) return
+        const editNewContact = {
+            firstName: contactToEdit.firstName,
+            lastName: contactToEdit.lastName,
+            blockContact: contactToEdit.blockContact,
+            addressId: contactToEdit.addressId,
+        };
+        const editNewAddress = {
+            street: contactToEdit.address.street,
+            city: contactToEdit.address.city,
+            postCode: contactToEdit.address.postCode,
+        };
+        setNewContact(editNewContact)
+        setNewAddress(editNewAddress)
+        setEditContact(false)
+    }, [editContact])
 
     const handleContactChange = (event) => setNewContact({ ...newContact, [event.target.name]: event.target.value });
 
@@ -92,7 +112,12 @@ const CreateContactForm = (props) => {
             className="form-stack light-shadow center contact-form"
             onSubmit={handleSubmit}
         >
-            <h1>Create Contact</h1>
+            {!editContact && (
+                <h1>Create Contact</h1>
+            )}
+            {editContact && (
+                <h1>Edit Contact</h1>
+            )}
             <label htmlFor="first-name-input">First Name:</label>
             <input
                 id="first-name-input"
@@ -144,15 +169,21 @@ const CreateContactForm = (props) => {
                 <label htmlFor="block-checkbox">Block</label>
             </div>
             <div className="actions-section">
+                {!editContact && (
                 <button className="button blue" type="submit">
                     Create
                 </button>
-                <button className="button blue">
-                    Save
-                </button>
-                <button className="button blue">
-                    Delete
-                </button>
+                )}
+                {editContact && (
+                <>
+                    <button className="button blue">
+                        Edit
+                    </button>
+                    <button className="button blue">
+                        Delete
+                    </button>
+                </>
+                )}
             </div>
         </form>
     );

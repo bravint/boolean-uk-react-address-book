@@ -149,3 +149,15 @@ h2 {
 .address-card h2 {
   font-size: 1.15rem;
 }
+
+.contactListItem {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.contactListItemButtons {
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+  gap: 1rem;
+}
