@@ -24,15 +24,26 @@ const CreateContactForm = (props) => {
 
     useEffect(() => {
         if (!submit) return;
-        postAddress();
+        
+        if (contactToEdit) {
+            postAddress("PATCH", newContact.addressId)
+        } else {
+            postAddress("POST");
+        }
+
     }, [submit]);
 
     useEffect(() => {
         if (!newContact.addressId || !submit) return;
-        postContact();
-        resetForm();
-        setFetchContacts(!fetchContacts);
-        setSubmit(false)
+        if (contactToEdit) {
+            postContact("PATCH", newContact.id);
+        } else {
+            postContact("POST")
+        }
+            resetForm();
+            setFetchContacts(!fetchContacts);
+            setSubmit(false)
+        
     }, [newContact]);
 
     console.log("states createForm:", {
@@ -45,19 +56,9 @@ const CreateContactForm = (props) => {
 
     useEffect(() => {
         if (!editContact) return
-        const editNewContact = {
-            firstName: contactToEdit.firstName,
-            lastName: contactToEdit.lastName,
-            blockContact: contactToEdit.blockContact,
-            addressId: contactToEdit.addressId,
-        };
-        const editNewAddress = {
-            street: contactToEdit.address.street,
-            city: contactToEdit.address.city,
-            postCode: contactToEdit.address.postCode,
-        };
-        setNewContact(editNewContact)
-        setNewAddress(editNewAddress)
+        const {address, ...contact} = contactToEdit
+        setNewContact(contact)
+        setNewAddress(address)
         setEditContact(false)
     }, [editContact])
 
@@ -72,16 +73,27 @@ const CreateContactForm = (props) => {
         setSubmit(true);
     };
 
+    const deleteContactHandler = () => {
+        fetch(`http://localhost:3000/addresses/${newContact.addressId}`,{ 
+        method: "DELETE"
+        })
+        fetch(`http://localhost:3000/contacts/${newContact.id}`,{ 
+        method: "DELETE"
+        })
+        resetForm();
+        setFetchContacts(!fetchContacts);
+    }
+
     const resetForm = () => {
         setNewAddress(initialAddresses);
         setNewContact(initialContacts);
     }
 
-    const apiURL = (endpoint) => `http://localhost:3000/${endpoint}`
+    const apiURL = (endpoint, id="") => `http://localhost:3000/${endpoint}/${id}`
 
-    const postConfig = (data) => {
+    const postConfig = (method, data) => {
         return {
-            method: "POST",
+            method: method,
             headers: {
                 "Content-Type": "application/json",
             },
@@ -89,9 +101,9 @@ const CreateContactForm = (props) => {
         }
     }
 
-    const postAddress = async () => {
+    const postAddress = async (method, id) => {
         try {
-            const response = await fetch(apiURL(`addresses`), postConfig(newAddress));
+            const response = await fetch(apiURL(`addresses`, id), postConfig(method, newAddress));
             const data = await response.json();
             setNewContact({ ...newContact, addressId: data.id });
         } catch (error) {
@@ -99,9 +111,9 @@ const CreateContactForm = (props) => {
         }
     };
 
-    const postContact = async () => {
+    const postContact = async (method, id) => {
         try {
-            await fetch(apiURL(`contacts`), postConfig(newContact));
+            await fetch(apiURL(`contacts`, id), postConfig(method, newContact));
         } catch (error) {
             console.log(`contact post error`, error);
         }
@@ -169,17 +181,17 @@ const CreateContactForm = (props) => {
                 <label htmlFor="block-checkbox">Block</label>
             </div>
             <div className="actions-section">
-                {!editContact && (
+                {!contactToEdit && (
                 <button className="button blue" type="submit">
                     Create
                 </button>
                 )}
-                {editContact && (
+                {contactToEdit && (
                 <>
-                    <button className="button blue">
+                    <button className="button blue" type = "submit">
                         Edit
                     </button>
-                    <button className="button blue">
+                    <button className="button blue" onClick = {() => deleteContactHandler()}>
                         Delete
                     </button>
                 </>

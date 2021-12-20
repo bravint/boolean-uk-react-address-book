@@ -38,6 +38,7 @@ export default function App() {
             console.log(`fetch error`, error);
         }
     };
+    
 
     return (
         <>
