@@ -1,28 +1,21 @@
 import { useState, useEffect } from "react";
 
+import { api, apiEndpoints } from "./config";
+
 import ContactsList from "./components/ContactsList";
-import CreateContactForm from "./components/CreateContactForm";
+import ContactForm from "./components/ContactForm";
+import ContactView from "./components/ContactView";
 
 import "./styles/styles.css";
 
-export default function App() {
+const App = () => {
     const [contacts, setContacts] = useState([]);
 
     const [hideForm, setHideForm] = useState(true);
 
     const [fetchContacts, setFetchContacts] = useState(false);
 
-    const [editContact, setEditContact] = useState(false);
-
-    const [contactToEdit, setcontactToEdit] = useState(null)
-
-    console.log("states", {
-        contacts,
-        hideForm,
-        fetchContacts,
-        editContact,
-        contactToEdit
-    });
+    const [selectedContact, setSelectedContact] = useState(null);
 
     useEffect(() => {
         fetchAPIContacts();
@@ -31,7 +24,7 @@ export default function App() {
 
     const fetchAPIContacts = async () => {
         try {
-            const response = await fetch(`http://localhost:3000/contacts`);
+            const response = await fetch(`${api.url}${apiEndpoints.contacts}`);
             const data = await response.json();
             setContacts(data);
         } catch (error) {
@@ -45,22 +38,24 @@ export default function App() {
                 contacts={contacts}
                 hideForm={hideForm}
                 setHideForm={setHideForm}
-                setEditContact={setEditContact}
-                setcontactToEdit={setcontactToEdit}
-
+                setSelectedContact={setSelectedContact}
             />
             <main>
                 {!hideForm && (
-                    <CreateContactForm
+                    <ContactForm
                         setFetchContacts={setFetchContacts}
                         fetchContacts={fetchContacts}
-                        editContact={editContact}
-                        setEditContact={setEditContact}
-                        contactToEdit={contactToEdit}
-                        setcontactToEdit={setcontactToEdit}
+                        setHideForm={setHideForm}
+                        selectedContact={selectedContact}
+                        setSelectedContact={setSelectedContact}
                     />
+                )}
+                {hideForm && selectedContact &&(
+                    <ContactView selectedContact={selectedContact}/>
                 )}
             </main>
         </>
     );
 }
+
+export default App;

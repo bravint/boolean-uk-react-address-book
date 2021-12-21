@@ -1,6 +1,7 @@
 # React Address Book
 
 ![React Address Book](./images/address-book.gif)
+![React Address Book Flowchart](./images/flowchart.png)
 
 In this exercise you are going to practice `fetch` and `CRUD` with a large form and multiple endpoints.
 

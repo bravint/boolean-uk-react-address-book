@@ -14,6 +14,7 @@ ol[class] {
 }
 
 ul {
+  margin: 0;
   padding: 0;
   list-style-type: none;
 }
@@ -26,8 +27,8 @@ h3,
 h4,
 p,
 ul[class],
-ol[class],
-li {
+ol[class]
+{
   margin: 0;
 }
 
@@ -83,7 +84,7 @@ h2 {
 }
 
 .contacts-section header {
-  padding: 0.5rem 0;
+  padding: 0.5rem 0 0;
 
   display: grid;
   grid-template-columns: 1fr auto;
@@ -92,16 +93,28 @@ h2 {
   border-bottom: 1px solid #1b1b1b;
 }
 
-.contacts-list > li + li {
-  border-top: 1px solid #cbcbcb;
-}
-
 .contacts-list > li {
-  padding: 1rem 0;
-
   display: grid;
   grid-template-columns: 1fr auto auto;
   gap: 1rem;
+}
+
+.contactListItem {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  padding: 1rem 0px;
+  border-bottom: 1px solid lightgray;
+}
+
+.contactListItemButtons {
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+  gap: 1rem;
+}
+
+.new-contact-btn{
+  margin-bottom: 0.5rem;
 }
 
 /* VIEW SECTION */
@@ -142,7 +155,6 @@ h2 {
 .contact-form .actions-section {
   display: flex;
   flex-direction: row-reverse;
-  justify-content: space-between;
   gap: 0.5rem;
 }
 
@@ -150,14 +162,6 @@ h2 {
   font-size: 1.15rem;
 }
 
-.contactListItem {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-}
-
-.contactListItemButtons {
-  display: flex;
-  flex-direction: row-reverse;
-  align-items: center;
-  gap: 1rem;
+.view-contact {
+  margin-top: 2rem;
 }
