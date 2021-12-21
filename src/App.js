@@ -31,6 +31,7 @@ const App = () => {
             console.log(`fetch error`, error);
         }
     };
+    
 
     return (
         <>
